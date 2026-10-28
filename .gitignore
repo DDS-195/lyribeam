@@ -1,0 +1,54 @@
+# Local tools, builds and runtime data
+**/bin/
+**/obj/
+**/build/
+**/dist/
+**/.local/
+**/tools/
+**/verification/
+**/data/
+**/logs/
+.vs/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Signing keys, credentials and machine-local settings
+*.keystore
+*.jks
+*.pfx
+*.p12
+*.pem
+*.key
+.env
+.env.*
+!.env.example
+.git-credentials
+*.user
+*.suo
+local.properties
+appsettings.Local.json
+
+# Binaries, installers, downloaded archives and test output
+*.exe
+*.dll
+*.pdb
+*.apk
+*.aab
+*.idsig
+*.class
+*.dex
+*.jar
+*.zip
+*.7z
+*.log
+*.jsonl
+*.tmp
+
+# Listening data and lyric caches
+*.lrc
+*.krc
+appearance.json
+offsets.json
+last-snapshot*
+startup-error.txt

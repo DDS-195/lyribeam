@@ -1,0 +1,119 @@
+<Window x:Class="LyricBridge.SettingsWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="蓝牙歌词 · 显示设置" Width="480" Height="740" WindowStartupLocation="CenterScreen"
+ WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True" Background="Transparent"
+ FontFamily="Segoe UI, Microsoft YaHei UI" FontSize="13" UseLayoutRounding="True" ShowInTaskbar="False">
+ <Window.Resources>
+  <ResourceDictionary>
+   <ResourceDictionary.MergedDictionaries><ResourceDictionary Source="Theme.xaml"/></ResourceDictionary.MergedDictionaries>
+   <Style x:Key="PalettePreset" TargetType="Button" BasedOn="{StaticResource SoftButton}">
+    <Setter Property="Height" Value="54"/><Setter Property="Padding" Value="3"/>
+    <Setter Property="Margin" Value="0,0,6,0"/>
+    <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+     <Border CornerRadius="10" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+      <Grid><Border x:Name="Wash" Background="White" Opacity="0" CornerRadius="9"/><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Grid>
+     </Border>
+     <ControlTemplate.Triggers>
+      <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Wash" Property="Opacity" Value=".08"/></Trigger>
+      <Trigger Property="IsKeyboardFocused" Value="True"><Setter Property="BorderBrush" Value="#E2D4FF"/></Trigger>
+      <Trigger Property="IsPressed" Value="True"><Setter TargetName="Wash" Property="Opacity" Value=".15"/></Trigger>
+     </ControlTemplate.Triggers>
+    </ControlTemplate></Setter.Value></Setter>
+   </Style>
+   <Style x:Key="QuietExpander" TargetType="Expander">
+    <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Expander">
+     <StackPanel>
+      <ToggleButton Content="{TemplateBinding Header}" IsChecked="{Binding IsExpanded,RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}" Cursor="Hand" AutomationProperties.Name="歌词同步设置">
+       <ToggleButton.Template><ControlTemplate TargetType="ToggleButton">
+        <Grid Height="34" Background="Transparent">
+         <ContentPresenter VerticalAlignment="Center"/>
+         <TextBlock x:Name="Arrow" Text="⌄" FontSize="18" Foreground="{StaticResource Muted}" HorizontalAlignment="Right" VerticalAlignment="Center" RenderTransformOrigin=".5,.5"/>
+        </Grid>
+        <ControlTemplate.Triggers><Trigger Property="IsChecked" Value="True"><Setter TargetName="Arrow" Property="RenderTransform"><Setter.Value><RotateTransform Angle="180"/></Setter.Value></Setter></Trigger></ControlTemplate.Triggers>
+       </ControlTemplate></ToggleButton.Template>
+      </ToggleButton>
+      <ContentPresenter x:Name="Body" ContentSource="Content" Visibility="Collapsed" Margin="0,8,0,0"/>
+     </StackPanel>
+     <ControlTemplate.Triggers><Trigger Property="IsExpanded" Value="True"><Setter TargetName="Body" Property="Visibility" Value="Visible"/></Trigger></ControlTemplate.Triggers>
+    </ControlTemplate></Setter.Value></Setter>
+   </Style>
+  </ResourceDictionary>
+ </Window.Resources>
+ <Grid x:Name="PreviewRootElement" Background="Transparent">
+  <Border Margin="16" CornerRadius="22" Background="#FA1D1B24" BorderBrush="#25FFFFFF" BorderThickness="1" Padding="26,22">
+   <Border.Effect><DropShadowEffect BlurRadius="20" ShadowDepth="4" Opacity=".35"/></Border.Effect>
+   <Grid>
+    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+    <Grid Margin="0,0,0,18" MouseLeftButtonDown="Header_Drag">
+     <StackPanel><TextBlock Text="显示设置" FontSize="22" FontWeight="SemiBold"/><TextBlock Text="让歌词，以你喜欢的方式出现" FontSize="11" Foreground="{StaticResource Muted}" Margin="0,7,0,0"/></StackPanel>
+     <Button Content="&#xE8BB;" HorizontalAlignment="Right" VerticalAlignment="Top" Style="{StaticResource IconButton}" Click="Close_Click" ToolTip="关闭设置" AutomationProperties.Name="关闭显示设置"/>
+    </Grid>
+    <ScrollViewer x:Name="SettingsScroll" Style="{StaticResource QuietScrollViewer}" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,8,0">
+     <StackPanel>
+      <Grid Margin="0,0,0,10">
+       <TextBlock Text="配色" FontSize="12" Foreground="{StaticResource Muted}" VerticalAlignment="Center"/>
+       <Button Content="恢复默认" HorizontalAlignment="Right" Style="{StaticResource SoftButton}" Background="Transparent" BorderThickness="0" Padding="0,3" FontSize="11" Foreground="{StaticResource Accent}" Click="ResetColors_Click" ToolTip="只恢复歌词和背景颜色"/>
+      </Grid>
+      <Border x:Name="ColorPreview" CornerRadius="14" BorderThickness="1" Padding="16,10" Height="100">
+       <StackPanel>
+        <TextBlock x:Name="PreviewCaption" Text="配色预览" FontSize="10"/>
+        <TextBlock x:Name="PreviewLyric" Text="让音乐，轻轻留在桌面" FontSize="21" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,13,0,4"/>
+        <TextBlock x:Name="PreviewNext" Text="下一句，依然轻轻陪伴" FontSize="11" HorizontalAlignment="Center"/>
+       </StackPanel>
+      </Border>
+      <UniformGrid x:Name="PresetPanel" Columns="5" Rows="1" Margin="0,12,-6,12"/>
+      <Grid>
+       <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+       <Button x:Name="LyricColorButton" Grid.Column="0" Margin="0,0,5,0" Style="{StaticResource SoftButton}" Padding="10,9" Click="LyricColor_Click" AutomationProperties.Name="选择歌词颜色">
+        <StackPanel Orientation="Horizontal">
+         <Ellipse x:Name="LyricSwatch" Width="21" Height="21" Stroke="#45FFFFFF" StrokeThickness="1" Margin="0,0,10,0"/>
+         <StackPanel><TextBlock Text="歌词颜色" FontSize="12"/><TextBlock x:Name="LyricColorValue" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,3,0,0"/></StackPanel>
+        </StackPanel>
+       </Button>
+       <Button x:Name="BackgroundColorButton" Grid.Column="1" Margin="5,0,0,0" Style="{StaticResource SoftButton}" Padding="10,9" Click="BackgroundColor_Click" AutomationProperties.Name="选择卡片背景颜色">
+        <StackPanel Orientation="Horizontal">
+         <Ellipse x:Name="BackgroundSwatch" Width="21" Height="21" Stroke="#60FFFFFF" StrokeThickness="1" Margin="0,0,10,0"/>
+         <StackPanel><TextBlock Text="卡片背景" FontSize="12"/><TextBlock x:Name="BackgroundColorValue" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,3,0,0"/></StackPanel>
+        </StackPanel>
+       </Button>
+      </Grid>
+      <TextBlock x:Name="ColorHint" MouseLeftButtonUp="ColorHint_Click" KeyDown="ColorHint_KeyDown" Text="点击色块自定义，修改时实时预览。" FontSize="11" Foreground="{StaticResource Muted}" Margin="0,8,0,12"/>
+      <Grid><TextBlock Text="显示方式" FontSize="12" Foreground="{StaticResource Muted}"/></Grid>
+      <Grid Margin="0,9,0,0"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+       <Button x:Name="CardMode" Content="轻盈卡片" Margin="0,0,5,0" Style="{StaticResource SoftButton}" Click="CardMode_Click"/>
+       <Button x:Name="TextMode" Grid.Column="1" Content="纯净歌词" Margin="5,0,0,0" Style="{StaticResource SoftButton}" Click="TextMode_Click"/>
+      </Grid>
+      <TextBlock x:Name="ModeHint" Text="卡片柔和衬底；纯净模式只留下歌词。" TextWrapping="Wrap" FontSize="11" Foreground="{StaticResource Muted}" Margin="0,6,0,12"/>
+      <Grid><TextBlock Text="歌词字号"/><TextBlock x:Name="FontValue" HorizontalAlignment="Right" Foreground="{StaticResource Accent}"/></Grid>
+      <Slider x:Name="FontSlider" Minimum="22" Maximum="48" TickFrequency="1" ValueChanged="Font_Changed" AutomationProperties.Name="歌词字号"/>
+      <Grid Margin="0,9,0,10"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+       <CheckBox x:Name="NextToggle" Content="显示下一句" Checked="Toggle_Changed" Unchecked="Toggle_Changed"/>
+       <CheckBox x:Name="TopToggle" Grid.Column="1" Content="保持置顶" Checked="Toggle_Changed" Unchecked="Toggle_Changed"/>
+      </Grid>
+      <Border Height="1" Background="#13FFFFFF"/>
+      <Expander x:Name="SyncSection" Style="{StaticResource QuietExpander}" Margin="0,6,0,8">
+       <Expander.Header><TextBlock Text="歌词同步" FontSize="12" Foreground="{StaticResource Muted}"/></Expander.Header>
+       <StackPanel>
+        <Grid><TextBlock Text="歌词校准"/><TextBlock x:Name="OffsetValue" HorizontalAlignment="Right" Foreground="{StaticResource Accent}"/></Grid>
+        <Grid Margin="0,10,0,0"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="56"/><ColumnDefinition/></Grid.ColumnDefinitions>
+         <Button Content="延后 0.2 秒" Margin="0,0,4,0" Style="{StaticResource SoftButton}" Click="Later_Click"/>
+         <Button Grid.Column="1" Content="归零" Style="{StaticResource SoftButton}" Padding="7,8" Click="Reset_Click"/>
+         <Button Grid.Column="2" Content="提前 0.2 秒" Margin="4,0,0,0" Style="{StaticResource SoftButton}" Click="Earlier_Click"/>
+        </Grid>
+        <CheckBox x:Name="OnlineToggle" Content="自动联网匹配歌词" Margin="0,16,0,10" Checked="Online_Changed" Unchecked="Online_Changed"/>
+        <Button Content="重新匹配歌词" Style="{StaticResource SoftButton}" Click="Match_Click"/>
+        <TextBlock x:Name="SourceValue" TextWrapping="Wrap" Foreground="{StaticResource Muted}" FontSize="11" Margin="0,9,0,8"/>
+       </StackPanel>
+      </Expander>
+
+     </StackPanel>
+    </ScrollViewer>
+    <Grid Grid.Row="2" Margin="0,16,0,0">
+     <TextBlock x:Name="VersionValue" FontSize="10" Foreground="#797180" VerticalAlignment="Center"/>
+     <Button Content="完成" HorizontalAlignment="Right" Background="#C8BAF7" Foreground="#221A32" BorderBrush="Transparent" Style="{StaticResource SoftButton}" Padding="24,9" Click="Close_Click"/>
+    </Grid>
+   </Grid>
+  </Border>
+ </Grid>
+</Window>

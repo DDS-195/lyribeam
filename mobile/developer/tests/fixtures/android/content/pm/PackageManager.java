@@ -1,0 +1,1 @@
+package android.content.pm;import java.util.*;public class PackageManager{public static final Map<Integer,String[]> packages=new HashMap<>();public String[] getPackagesForUid(int uid){return packages.get(uid);}}

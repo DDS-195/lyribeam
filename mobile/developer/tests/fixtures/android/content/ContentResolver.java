@@ -1,0 +1,1 @@
+package android.content;import android.net.Uri;import android.os.Bundle;public class ContentResolver{public static ContentProvider provider;public Bundle call(Uri uri,String method,String arg,Bundle extras){if(provider==null)throw new IllegalArgumentException("Missing provider");return provider.call(method,arg,extras);}}

@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>LyricBridge.ico</ApplicationIcon><AssemblyName>LyricBridge</AssemblyName>
+    <Version>0.8.15</Version>
+    <Product>蓝牙歌词</Product><Title>蓝牙歌词</Title><AssemblyTitle>蓝牙歌词</AssemblyTitle><Description>通过蓝牙同步手机歌曲与播放进度的桌面歌词应用</Description>
+  </PropertyGroup>
+  <ItemGroup><Resource Include="LyricBridge.ico" /><None Update="LyricBridge.ico" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" /><Compile Remove="MainForm.cs" /></ItemGroup></Project>
